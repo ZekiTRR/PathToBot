@@ -1,3 +1,4 @@
+#include "struct.h"
 // Hidden C++ exception states: #wind=27
 __int64 __fastcall sub_1409193B0(OptionsUIController *OptionsUIController, __m128i *a2)
 {
