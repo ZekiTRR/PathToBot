@@ -52,14 +52,15 @@ pub unsafe fn toggle_corner_map(options_ui_controller_: *mut OptionsUiController
 
     let bool_parser: unsafe extern "C" fn() -> bool = std::mem::transmute(parser_addr);
 
-    // Вызываем парсер игры (получаем тот самый v9 из IDA)
     /*
+    Вызываем парсер игры (получаем тот самый v9 из IDA)
+
     v9 = bool_enable_disable_parser_shor_Corner_map();
     setter(pShowCornerMap_Widget, v9, 0);
      */
     let v9 = bool_parser();
 
-    // 9. Передаем результат парсера (v9 как u64) в сеттер виджета
+    // Передаем результат парсера (v9 как u64) в сеттер виджета
     setter(p_show_corner_map_widget, v9 as u64, 0);
 }
 
