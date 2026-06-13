@@ -1,0 +1,78 @@
+// Hidden C++ exception states: #wind=2
+__int64 __fastcall sub_140E36950(__int64 a1)
+{
+  __int64 v2; // rsi
+  __int64 v3; // rcx
+  __int64 v4; // rbx
+  __int64 v5; // rdx
+  _BYTE *v6; // rdx
+  _QWORD *v7; // rdx
+  struct tagMSG Msg; // [rsp+30h] [rbp-99h] BYREF
+  struct tagMSG *p_Msg; // [rsp+68h] [rbp-61h]
+  __int16 v11[2]; // [rsp+70h] [rbp-59h] BYREF
+  int v12; // [rsp+74h] [rbp-55h]
+  _BYTE v13[56]; // [rsp+78h] [rbp-51h] BYREF
+  _BYTE *v14; // [rsp+B0h] [rbp-19h]
+  _QWORD v15[7]; // [rsp+B8h] [rbp-11h] BYREF
+  _QWORD *v16; // [rsp+F0h] [rbp+27h]
+  char v17; // [rsp+130h] [rbp+67h] BYREF
+
+  v2 = *(_QWORD *)(a1 + 176);
+  sub_140E8A7E0();
+  v3 = *(_QWORD *)(a1 + 168);
+  if ( v3 )
+    (*(void (__fastcall **)(__int64, __int64))(*(_QWORD *)v3 + 96LL))(v3, a1);
+  Msg.hwnd = (HWND)off_143004B80;
+  *(_QWORD *)&Msg.message = a1;
+  p_Msg = &Msg;
+  sub_140E31560(a1 + 376, &Msg);
+  Msg.hwnd = (HWND)off_143004B80;
+  *(_QWORD *)&Msg.message = a1;
+  p_Msg = &Msg;
+  sub_140E31560(a1 + 512, &Msg);
+  v17 = 0;
+  do
+  {
+    if ( *(_QWORD *)(a1 + 160) )
+    {
+      if ( !*(_BYTE *)(a1 + 88) && v2 )
+        (*(void (__fastcall **)(__int64))(*(_QWORD *)v2 + 16LL))(v2);
+      v4 = *(_QWORD *)(a1 + 656);
+      v15[0] = off_143004C98;
+      v15[1] = &v17;
+      v16 = v15;
+      v11[0] = 17;
+      v12 = 0;
+      v14 = nullptr;
+      sub_140127770((__int64)v13, (__int64)v15);
+      sub_140DB3A30(v4, 1022434324, v11);
+      if ( v14 )
+      {
+        v6 = v13;
+        LOBYTE(v6) = v14 != v13;
+        (*(void (__fastcall **)(_BYTE *, _BYTE *))(*(_QWORD *)v14 + 32LL))(v14, v6);
+        v14 = nullptr;
+      }
+      if ( v16 )
+      {
+        v7 = v15;
+        LOBYTE(v7) = v16 != v15;
+        (*(void (__fastcall **)(_QWORD *, _QWORD *))(*v16 + 32LL))(v16, v7);
+      }
+      LOBYTE(v5) = *(_BYTE *)(*(_QWORD *)(a1 + 160) + 10LL) == 0;
+      sub_140E358F0(a1, v5);
+    }
+    else
+    {
+      while ( PeekMessageW(&Msg, nullptr, 0, 0, 1u) )
+      {
+        if ( Msg.message == 18 )
+          v17 = 1;
+        TranslateMessage(&Msg);
+        DispatchMessageW(&Msg);
+      }
+    }
+  }
+  while ( !v17 );
+  return sub_140E8AA10();
+}

@@ -8,7 +8,6 @@ struct Bool_enable_disable_parser_shor_Corner_map {
     bool_enable_disable_parser_shor_Corner_map_address: usize,
 }
 
-// Статический лок для хранения адреса функции-парсера
 static Setting: OnceLock<Bool_enable_disable_parser_shor_Corner_map> = OnceLock::new();
 
 pub unsafe fn toggle_corner_map(options_ui_controller_: *mut OptionsUiController) {

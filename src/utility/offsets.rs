@@ -1,5 +1,6 @@
 use std::ffi::c_void;
 
+/* Сейчас эти структура не имеют смысла
 #[repr(C)] // Нужен для точного воссоздания структуры в памяти
 pub struct Hud {
     pub _unused: u8, // sizeof=0x1 (Rust не разрешает пустые repr(C) структуры размера 0)
@@ -108,7 +109,7 @@ pub struct OptionsUiController {
     pub pad_238: [u8; 8],
     pub p_show_resistance_icons: *mut UiSettingWidget,
 }
-
+*/
 
 
 

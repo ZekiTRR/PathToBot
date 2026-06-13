@@ -1,6 +1,5 @@
-#include "struct.h"
 // Hidden C++ exception states: #wind=27
-__int64 __fastcall sub_1409193B0(OptionsUIController *OptionsUIController, __m128i *a2)
+__int64 __fastcall UISettingWidget(OptionsUIController *OptionsUIController, __m128i *a2)
 {
   __m128i *v2; // r12
   int v4; // r13d
@@ -8,7 +7,7 @@ __int64 __fastcall sub_1409193B0(OptionsUIController *OptionsUIController, __m12
   UISettingWidget **p_pOptionsContext; // r15
   UISettingWidget *pShowCornerMap_Widget; // rdi
   void (__fastcall *setter)(UISettingWidget *, _QWORD, _QWORD); // rbx
-  unsigned __int8 true_or_false; // al
+  unsigned __int8 v9; // al
   UISettingWidget *pAutoRecenterMap_Widget; // rdi
   void (__fastcall *v11)(UISettingWidget *, _QWORD, _QWORD); // rbx
   unsigned __int8 v12; // al
@@ -443,8 +442,9 @@ __int64 __fastcall sub_1409193B0(OptionsUIController *OptionsUIController, __m12
     pShowCornerMap_Widget = OptionsUIController->pShowCornerMap_Widget;
     setter = *(void (__fastcall **)(UISettingWidget *, _QWORD, _QWORD))(*(_QWORD *)pShowCornerMap_Widget + 0x340LL);// ?? Включить или выключить
                                                 //
-    true_or_false = bool_enable_disable_parser();
-    setter(pShowCornerMap_Widget, true_or_false, 0);
+    v9 = bool_enable_disable_parser_shor_Corner_map();
+    setter(pShowCornerMap_Widget, v9, 0);       // Изменение чекбокса
+                                                //
     p_pOptionsContext = &OptionsUIController->pOptionsContext;
     v5 = v2->m128i_i64[1];
     if ( !v5 )
@@ -1895,7 +1895,7 @@ LABEL_382:
 LABEL_387:
   pMouseWheelZoom = OptionsUIController->pMouseWheelZoom;
   v300 = *(void (__fastcall **)(UISettingWidget *, _QWORD, _QWORD))(*(_QWORD *)pMouseWheelZoom + 832LL);
-  v301 = sub_1417E6CD0();
+  v301 = bool_enable_disable_parser_mouse_wheel_zoom();
   v300(pMouseWheelZoom, v301, 0);
   if ( v86 )
   {
