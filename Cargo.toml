@@ -8,6 +8,7 @@ name = "PathToBot" # Имя файла на выходе (будет PathToBot.d
 crate-type = ["cdylib"]
 
 [dependencies]
+minhook = "0.9.0"
 
 [dependencies.windows-sys]
 version = "0.61.2"

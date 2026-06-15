@@ -1,5 +1,5 @@
-// Убираем некорректное объявление `mod fov;`
-// Добавляем правильный импорт функции
+// Получить базовый адрес игры и сохранить в контейнер
+
 use crate::utility::fov::change_fov;
 
 use std::ptr::{null, null_mut};
@@ -33,13 +33,8 @@ pub unsafe fn client_initialization() -> bool {
     CLIENT.set(client_instance)
         .expect("Ошибка инициализации CLIENT");
 
-    // Теперь мы можем вызывать функцию из другого модуля
-    let mut fov_value = 2.0;
-    loop {
-        change_fov(fov_value);
 
-        std::thread::sleep(std::time::Duration::from_millis(10));
-    }
+
 
     true
 }
