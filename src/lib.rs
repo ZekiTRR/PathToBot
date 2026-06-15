@@ -1,5 +1,4 @@
-mod client;
-mod utility; // Объявляем модуль utility, чтобы он был доступен во всем проекте
+// Инициализация hudhook. Также можно создать отдельный поток для AOB скана
 
 use std::ffi::c_void;
 use std::thread;
