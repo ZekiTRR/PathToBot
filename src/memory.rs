@@ -1,4 +1,6 @@
 use std::ops::Range;
+use minhook::{MinHook, MH_STATUS};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use windows_sys::Win32::System::LibraryLoader::GetModuleHandleA;
 use windows_sys::Win32::System::ProcessStatus::{K32GetModuleInformation, MODULEINFO};
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
@@ -73,4 +75,16 @@ pub unsafe fn resolve_rip(instruction_addr: usize, offset_in_instruction: usize,
     let rip = (instruction_addr + instruction_len) as i64;
 
     (rip + displacement) as usize
+}
+
+
+pub unsafe fn Get_Player_Struct()
+{
+    pub static PLAYER_STRUCT_PTR: AtomicUsize = AtomicUsize::new(0);
+
+    // Сюда запишется адрес из RCX. Аналог alloc(player_struct_ptr, 8)
+    pub static PLAYER_STRUCT_PTR: AtomicUsize = AtomicUsize::new(0);
+
+    // Сюда мы сохраним адрес возврата в игру (адрес инструкции ПОСЛЕ нашего jmp)
+    static mut RETURN_ADDRESS: usize = 0;
 }

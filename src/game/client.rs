@@ -33,5 +33,8 @@ pub unsafe fn client_initialization() -> bool {
     CLIENT.set(client_instance)
         .expect("Ошибка инициализации CLIENT");
 
+
+
+
     true
 }
