@@ -23,7 +23,8 @@ pub unsafe extern "system" fn DllMain(
     match dw_reason { // switch
         DLL_PROCESS_ATTACH => {
             thread::spawn(|| {
-                unsafe { client::client_initialization(); }
+                unsafe { client::client_initialization(); } // AOB scan
+                unsafe { ui::render_loop(); } // UI loop
             });
         }
         DLL_PROCESS_DETACH => {}
