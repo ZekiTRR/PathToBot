@@ -1,9 +1,12 @@
-use std::ops::Range;
 use minhook::{MinHook, MH_STATUS};
 use std::sync::atomic::{AtomicUsize, Ordering};
+
 use windows_sys::Win32::System::LibraryLoader::GetModuleHandleA;
 use windows_sys::Win32::System::ProcessStatus::{K32GetModuleInformation, MODULEINFO};
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
+
+use std::ops::Range;
+use std::arch::asm;
 
 /// Функция переводит строку паттерна вида "48 8B 05 ?? ?? ?? ??" в вектор Опций
 fn parse_pattern(pattern: &str) -> Vec<Option<u8>> {
@@ -78,13 +81,46 @@ pub unsafe fn resolve_rip(instruction_addr: usize, offset_in_instruction: usize,
 }
 
 
-pub unsafe fn Get_Player_Struct()
-{
-    pub static PLAYER_STRUCT_PTR: AtomicUsize = AtomicUsize::new(0);
+// Универсальная функция установки Mid-Function хука
+pub unsafe fn install_hook(
+    pattern: &str,
+    hook_len: usize,                       // Длина оригинальной инструкции (сколько байт затираем)
+    naked_fn: unsafe extern "sysv64" fn(), // Функция-капкан
+    return_addr: *mut usize,               // Ссылка на переменную, куда запишется адрес возврата
+) {
+    // 1. Ищем адрес
+    let inject_addr = find_pattern(pattern).expect("Один из паттернов не найден!");
 
-    // Сюда запишется адрес из RCX. Аналог alloc(player_struct_ptr, 8)
-    pub static PLAYER_STRUCT_PTR: AtomicUsize = AtomicUsize::new(0);
+    // 2. Считаем и сохраняем адрес возврата
+    *return_addr = inject_addr + hook_len;
 
-    // Сюда мы сохраним адрес возврата в игру (адрес инструкции ПОСЛЕ нашего jmp)
-    static mut RETURN_ADDRESS: usize = 0;
+    // 3. Открываем память для записи
+    let mut old_protect = 0;
+    windows_sys::Win32::System::Memory::VirtualProtect(
+        inject_addr as _,
+        hook_len,
+        windows_sys::Win32::System::Memory::PAGE_EXECUTE_READWRITE,
+        &mut old_protect,
+    );
+
+    // 4. Математика прыжка: Target - (Inject + 5)
+    let jmp_offset = (naked_fn as usize).wrapping_sub(inject_addr + 5) as u32;
+
+    // 5. Пишем JMP и дистанцию
+    let slice = std::slice::from_raw_parts_mut(inject_addr as *mut u8, hook_len);
+    slice[0] = 0xE9; // JMP
+    slice[1..5].copy_from_slice(&jmp_offset.to_le_bytes());
+
+    // 6. Добиваем остаток NOP-ами (динамически, в зависимости от hook_len)
+    for i in 5..hook_len {
+        slice[i] = 0x90;
+    }
+
+    // 7. Закрываем память
+    windows_sys::Win32::System::Memory::VirtualProtect(
+        inject_addr as _,
+        hook_len,
+        old_protect,
+        &mut old_protect,
+    );
 }

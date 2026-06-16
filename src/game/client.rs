@@ -1,12 +1,17 @@
 // Получить базовый адрес игры и сохранить в контейнер
 
-use crate::utility::fov::change_fov;
-
 use std::ptr::{null, null_mut};
 use windows_sys::Win32::System::Console::AllocConsole;
 use windows_sys::Win32::System::LibraryLoader::GetModuleHandleA;
 use windows_sys::Win32::Foundation::HMODULE;
 use std::sync::OnceLock;
+
+use std::ptr::addr_of_mut;
+
+use crate::memory::*;
+use crate::game::hooks::*;
+
+
 
 #[derive(Debug)]
 #[repr(C)]
@@ -16,6 +21,14 @@ pub struct Client {
 
 pub static CLIENT: OnceLock<Client> = OnceLock::new();
 
+
+unsafe fn init_game_hooks()
+{
+    // Обращение к static mut переменной должно быть в unsafe блоке
+    unsafe {
+        install_hook(crate::config::PLAYER_AOB, 7, hook_player, addr_of_mut!(crate::game::hooks::PLAYER_RET)); // Пока один хук
+    }
+}
 pub unsafe fn client_initialization() -> bool {
     AllocConsole();
     println!("[Rust DLL] Успешно внедрились в процесс!");
@@ -32,6 +45,10 @@ pub unsafe fn client_initialization() -> bool {
 
     CLIENT.set(client_instance)
         .expect("Ошибка инициализации CLIENT");
+
+    println!("[hooks] Попытка установки хуков");
+    init_game_hooks();
+    println!("[hooks] Хуки установлены");
 
 
 
