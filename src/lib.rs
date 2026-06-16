@@ -10,6 +10,10 @@ use windows_sys::Win32::System::SystemServices::{DLL_PROCESS_ATTACH, DLL_PROCESS
 use windows_sys::Win32::System::Console::{AllocConsole, FreeConsole};
 use windows_sys::Win32::System::LibraryLoader::GetModuleHandleA;
 
+pub mod game;
+pub mod memory;
+pub mod config;
+
 // Создадим псевдоним для LPVOID
 type LPVOID = *mut c_void;
 
@@ -23,8 +27,8 @@ pub unsafe extern "system" fn DllMain(
     match dw_reason { // switch
         DLL_PROCESS_ATTACH => {
             thread::spawn(|| {
-                unsafe { client::client_initialization(); } // AOB scan
-                unsafe { ui::render_loop(); } // UI loop
+                unsafe { game::client::client_initialization(); } // AOB scan
+               // unsafe { ui::render_loop(); } // UI loop
             });
         }
         DLL_PROCESS_DETACH => {}
