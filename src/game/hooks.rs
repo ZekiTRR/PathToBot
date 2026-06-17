@@ -1,35 +1,28 @@
-use std::arch::naked_asm;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-// ==========================================
-// 1. ИГРОК (Player Struct) | Регистр: RAX
-// ==========================================
 pub static PLAYER_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut PLAYER_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_player() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_player() {
+    std::arch::naked_asm!(
         "push rbx",
-        "lea rbx, [rip + {ptr_addr}]",     // <--- RIP-относительная загрузка адреса
+        "lea rbx, [rip + {ptr_addr}]",
         "mov [rbx], rax",
         "pop rbx",
         "cmp dword ptr [rax+0x1A8], 0x00",
-        "jmp qword ptr [rip + {jmp_back}]",// <--- RIP-относительный прыжок (qword = 8 байт)
+        "jmp qword ptr [rip + {jmp_back}]",
         ptr_addr = sym PLAYER_PTR,
         jmp_back = sym PLAYER_RET
     );
 }
 
-// ==========================================
-// 2. РАДАР (Radar / Entities) | Регистр: R14
-// ==========================================
 pub static RADAR_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut RADAR_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_radar() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_radar() {
+    std::arch::naked_asm!(
         "push rax",
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], r14",
@@ -41,15 +34,12 @@ pub unsafe extern "sysv64" fn hook_radar() {
     );
 }
 
-// ==========================================
-// 3. КАМЕРА / FOV (Camera / W2S) | Регистр: RDI
-// ==========================================
 pub static FOV_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut FOV_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_fov() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_fov() {
+    std::arch::naked_asm!(
         "push rax",
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], rdi",
@@ -61,15 +51,12 @@ pub unsafe extern "sysv64" fn hook_fov() {
     );
 }
 
-// ==========================================
-// 4. МЫШЬ / INPUT (Mouse) | Регистр: RDI
-// ==========================================
 pub static MOUSE_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut MOUSE_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_mouse() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_mouse() {
+    std::arch::naked_asm!(
         "push rax",
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], rdi",
@@ -81,15 +68,12 @@ pub unsafe extern "sysv64" fn hook_mouse() {
     );
 }
 
-// ==========================================
-// 5. ДВИЖЕНИЕ (Movement Controller) | Регистр: RCX
-// ==========================================
 pub static MOVEMENT_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut MOVEMENT_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_movement() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_movement() {
+    std::arch::naked_asm!(
         "push rax",
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], rcx",
@@ -102,9 +86,23 @@ pub unsafe extern "sysv64" fn hook_movement() {
     );
 }
 
-// ==========================================
-// УДОБНЫЕ ГЕТТЕРЫ
-// ==========================================
+pub static PLAYER_STRUCT_PTR: AtomicUsize = AtomicUsize::new(0);
+pub static mut PLAYER_STRUCT_RET: usize = 0;
+
+#[unsafe(naked)]
+pub unsafe extern "C" fn hook_player_struct() {
+    std::arch::naked_asm!(
+        ".intel_syntax noprefix",
+        "push rax",
+        "lea rax, [rip + {ptr_addr}]",
+        "mov [rax], rcx",
+        "pop rax",
+        "movss xmm7,[rcx+0x2B8]",
+        "jmp [rip + {jmp_back}]",
+        ptr_addr = sym PLAYER_STRUCT_PTR,
+        jmp_back = sym PLAYER_STRUCT_RET
+    );
+}
 
 pub fn get_player() -> Option<usize> {
     let addr = PLAYER_PTR.load(Ordering::Relaxed);
@@ -128,5 +126,10 @@ pub fn get_mouse() -> Option<usize> {
 
 pub fn get_movement() -> Option<usize> {
     let addr = MOVEMENT_PTR.load(Ordering::Relaxed);
+    if addr == 0 { None } else { Some(addr) }
+}
+
+pub fn get_player_struct() -> Option<usize> {
+    let addr = PLAYER_STRUCT_PTR.load(Ordering::Relaxed);
     if addr == 0 { None } else { Some(addr) }
 }
