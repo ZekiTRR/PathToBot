@@ -58,6 +58,10 @@ pub unsafe fn client_initialization() -> bool {
 
     loop {
         thread::sleep(std::time::Duration::from_millis(1000));
+
+        // #placeholder
+        let test = get_player();
+        println!("[DEBUG] test: {:?}", test);
     }
 
     true
