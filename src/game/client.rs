@@ -5,6 +5,7 @@ use windows_sys::Win32::System::Console::AllocConsole;
 use windows_sys::Win32::System::LibraryLoader::GetModuleHandleA;
 use windows_sys::Win32::Foundation::HMODULE;
 use std::sync::OnceLock;
+use std::thread;
 
 use std::ptr::addr_of_mut;
 
@@ -26,7 +27,11 @@ unsafe fn init_game_hooks()
 {
     // Обращение к static mut переменной должно быть в unsafe блоке
     unsafe {
-        install_hook(crate::config::PLAYER_AOB, 7, hook_player, addr_of_mut!(crate::game::hooks::PLAYER_RET)); // Пока один хук
+        install_hook(crate::config::PLAYER_AOB, 7, crate::game::hooks::hook_player, addr_of_mut!(crate::game::hooks::PLAYER_RET));
+        install_hook(crate::config::RADAR_AOB, 9, crate::game::hooks::hook_radar, addr_of_mut!(crate::game::hooks::RADAR_RET));
+        install_hook(crate::config::FOV_AOB, 8, crate::game::hooks::hook_fov, addr_of_mut!(crate::game::hooks::FOV_RET));
+        install_hook(crate::config::MOUSE_AOB, 7, crate::game::hooks::hook_mouse, addr_of_mut!(crate::game::hooks::MOUSE_RET));
+        install_hook(crate::config::MOVEMENT_CTRL_AOB, 6, crate::game::hooks::hook_movement, addr_of_mut!(crate::game::hooks::MOVEMENT_RET));
     }
 }
 pub unsafe fn client_initialization() -> bool {
@@ -51,7 +56,9 @@ pub unsafe fn client_initialization() -> bool {
     println!("[hooks] Хуки установлены");
 
 
-
+    loop {
+        thread::sleep(std::time::Duration::from_millis(1000));
+    }
 
     true
 }

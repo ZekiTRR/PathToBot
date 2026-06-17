@@ -8,14 +8,14 @@ pub static PLAYER_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut PLAYER_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_player() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_player() {
+    std::arch::naked_asm!(
         "push rbx",
-        "lea rbx, [rip + {ptr_addr}]",     // <--- RIP-относительная загрузка адреса
+        "lea rbx, [rip + {ptr_addr}]",      // <-- Возвращаем rip +
         "mov [rbx], rax",
         "pop rbx",
         "cmp dword ptr [rax+0x1A8], 0x00",
-        "jmp qword ptr [rip + {jmp_back}]",// <--- RIP-относительный прыжок (qword = 8 байт)
+        "jmp qword ptr [rip + {jmp_back}]", // <-- Возвращаем rip +
         ptr_addr = sym PLAYER_PTR,
         jmp_back = sym PLAYER_RET
     );
@@ -28,8 +28,8 @@ pub static RADAR_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut RADAR_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_radar() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_radar() {
+    std::arch::naked_asm!(
         "push rax",
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], r14",
@@ -42,20 +42,20 @@ pub unsafe extern "sysv64" fn hook_radar() {
 }
 
 // ==========================================
-// 3. КАМЕРА / FOV (Camera / W2S) | Регистр: RDI
+// 3. КАМЕРА / FOV | Регистр: RDI
 // ==========================================
 pub static FOV_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut FOV_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_fov() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_fov() {
+    std::arch::naked_asm!(
         "push rax",
-        "lea rax, [rip + {ptr_addr}]",
+        "lea rax, [rip + {ptr_addr}]",      // <-- Возвращаем rip +
         "mov [rax], rdi",
         "pop rax",
         "movss xmm6, [rdi+0x4B0]",
-        "jmp qword ptr [rip + {jmp_back}]",
+        "jmp qword ptr [rip + {jmp_back}]", // <-- Возвращаем rip +
         ptr_addr = sym FOV_PTR,
         jmp_back = sym FOV_RET
     );
@@ -68,8 +68,8 @@ pub static MOUSE_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut MOUSE_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_mouse() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_mouse() {
+    std::arch::naked_asm!(
         "push rax",
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], rdi",
@@ -88,8 +88,8 @@ pub static MOVEMENT_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut MOVEMENT_RET: usize = 0;
 
 #[unsafe(naked)]
-pub unsafe extern "sysv64" fn hook_movement() {
-    naked_asm!(
+pub unsafe extern "C" fn hook_movement() {
+    std::arch::naked_asm!(
         "push rax",
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], rcx",
