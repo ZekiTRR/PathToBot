@@ -10,6 +10,7 @@ use windows_sys::Win32::System::SystemServices::{DLL_PROCESS_ATTACH, DLL_PROCESS
 use windows_sys::Win32::System::Console::{AllocConsole, FreeConsole};
 use windows_sys::Win32::System::LibraryLoader::GetModuleHandleA;
 
+pub mod bot;
 pub mod game;
 pub mod memory;
 pub mod config;

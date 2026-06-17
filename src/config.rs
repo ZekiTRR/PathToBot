@@ -40,3 +40,7 @@ pub const CLICK_AOB: &str = "F2 0F 11 09 E8 9D EB 31 FE";
 /// Оригинал: movss xmm7, [rcx+000002B8]
 /// Длина инструкции для хука: 8 байт
 pub const ENTITY_TEST_AOB: &str = "F3 0F 10 B9 B8 02 00 00 F3";
+
+/// 8. Функция обработки запроса перемещения (MinHook)
+/// MovementComponent_ProcessMoveRequest — полный пролог для поиска адреса
+pub const PROCESS_MOVE_REQUEST_AOB: &str = "48 8B C4 48 89 58 ?? 48 89 68 ?? 48 89 70 ?? 57 41 54 41 55 41 56 41 57 48 81 EC ?? ?? ?? ?? 0F 29 70 ?? 0F 29 78 ?? 44 0F 29 40 ?? 48 8B FA";

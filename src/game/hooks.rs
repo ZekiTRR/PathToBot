@@ -102,6 +102,24 @@ pub unsafe extern "C" fn hook_movement() {
     );
 }
 
+pub static PLAYER_STRUCT_PTR: AtomicUsize = AtomicUsize::new(0);
+pub static mut PLAYER_STRUCT_RET: usize = 0;
+#[unsafe(naked)]
+pub unsafe extern "C" fn hook_player_struct() {
+    std::arch::naked_asm!(
+        ".intel_syntax noprefix",
+        "push rax",
+        "lea rax, [rip + {ptr_addr}]",
+        "mov [rax], rcx",
+        "pop rax",
+        "movss xmm7,[rcx+0x2B8]",     // Оригинальная инструкция
+        "jmp [rip + {jmp_back}]",
+        ptr_addr = sym PLAYER_STRUCT_PTR,
+        jmp_back = sym PLAYER_STRUCT_RET
+
+        )
+}
+
 // ==========================================
 // УДОБНЫЕ ГЕТТЕРЫ
 // ==========================================
@@ -128,5 +146,10 @@ pub fn get_mouse() -> Option<usize> {
 
 pub fn get_movement() -> Option<usize> {
     let addr = MOVEMENT_PTR.load(Ordering::Relaxed);
+    if addr == 0 { None } else { Some(addr) }
+}
+
+pub fn get_player_struct() -> Option<usize> {
+    let addr = PLAYER_STRUCT_PTR.load(Ordering::Relaxed);
     if addr == 0 { None } else { Some(addr) }
 }
