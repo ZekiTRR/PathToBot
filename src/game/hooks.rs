@@ -1,9 +1,5 @@
-use std::arch::naked_asm;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-// ==========================================
-// 1. ИГРОК (Player Struct) | Регистр: RAX
-// ==========================================
 pub static PLAYER_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut PLAYER_RET: usize = 0;
 
@@ -11,19 +7,16 @@ pub static mut PLAYER_RET: usize = 0;
 pub unsafe extern "C" fn hook_player() {
     std::arch::naked_asm!(
         "push rbx",
-        "lea rbx, [rip + {ptr_addr}]",      // <-- Возвращаем rip +
+        "lea rbx, [rip + {ptr_addr}]",
         "mov [rbx], rax",
         "pop rbx",
         "cmp dword ptr [rax+0x1A8], 0x00",
-        "jmp qword ptr [rip + {jmp_back}]", // <-- Возвращаем rip +
+        "jmp qword ptr [rip + {jmp_back}]",
         ptr_addr = sym PLAYER_PTR,
         jmp_back = sym PLAYER_RET
     );
 }
 
-// ==========================================
-// 2. РАДАР (Radar / Entities) | Регистр: R14
-// ==========================================
 pub static RADAR_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut RADAR_RET: usize = 0;
 
@@ -41,9 +34,6 @@ pub unsafe extern "C" fn hook_radar() {
     );
 }
 
-// ==========================================
-// 3. КАМЕРА / FOV | Регистр: RDI
-// ==========================================
 pub static FOV_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut FOV_RET: usize = 0;
 
@@ -51,19 +41,16 @@ pub static mut FOV_RET: usize = 0;
 pub unsafe extern "C" fn hook_fov() {
     std::arch::naked_asm!(
         "push rax",
-        "lea rax, [rip + {ptr_addr}]",      // <-- Возвращаем rip +
+        "lea rax, [rip + {ptr_addr}]",
         "mov [rax], rdi",
         "pop rax",
         "movss xmm6, [rdi+0x4B0]",
-        "jmp qword ptr [rip + {jmp_back}]", // <-- Возвращаем rip +
+        "jmp qword ptr [rip + {jmp_back}]",
         ptr_addr = sym FOV_PTR,
         jmp_back = sym FOV_RET
     );
 }
 
-// ==========================================
-// 4. МЫШЬ / INPUT (Mouse) | Регистр: RDI
-// ==========================================
 pub static MOUSE_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut MOUSE_RET: usize = 0;
 
@@ -81,9 +68,6 @@ pub unsafe extern "C" fn hook_mouse() {
     );
 }
 
-// ==========================================
-// 5. ДВИЖЕНИЕ (Movement Controller) | Регистр: RCX
-// ==========================================
 pub static MOVEMENT_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut MOVEMENT_RET: usize = 0;
 
@@ -104,6 +88,7 @@ pub unsafe extern "C" fn hook_movement() {
 
 pub static PLAYER_STRUCT_PTR: AtomicUsize = AtomicUsize::new(0);
 pub static mut PLAYER_STRUCT_RET: usize = 0;
+
 #[unsafe(naked)]
 pub unsafe extern "C" fn hook_player_struct() {
     std::arch::naked_asm!(
@@ -112,17 +97,12 @@ pub unsafe extern "C" fn hook_player_struct() {
         "lea rax, [rip + {ptr_addr}]",
         "mov [rax], rcx",
         "pop rax",
-        "movss xmm7,[rcx+0x2B8]",     // Оригинальная инструкция
+        "movss xmm7,[rcx+0x2B8]",
         "jmp [rip + {jmp_back}]",
         ptr_addr = sym PLAYER_STRUCT_PTR,
         jmp_back = sym PLAYER_STRUCT_RET
-
-        )
+    );
 }
-
-// ==========================================
-// УДОБНЫЕ ГЕТТЕРЫ
-// ==========================================
 
 pub fn get_player() -> Option<usize> {
     let addr = PLAYER_PTR.load(Ordering::Relaxed);
